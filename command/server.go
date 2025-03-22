@@ -73,7 +73,7 @@ func main() {
 
 	server := grpc.NewServer()
 	reflection.Register(server) //use server reflection, not required
-	pb.RegisterProductServiceServer(server, productContoller)
+	pb.RegisterProductServiceCommandServer(server, productContoller)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	stopCH := make(chan os.Signal, 1)

@@ -19,257 +19,321 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_CreateCategory_FullMethodName = "/products.ProductService/CreateCategory"
-	ProductService_GetCategory_FullMethodName    = "/products.ProductService/GetCategory"
-	ProductService_CreateProduct_FullMethodName  = "/products.ProductService/CreateProduct"
-	ProductService_GetProduct_FullMethodName     = "/products.ProductService/GetProduct"
-	ProductService_ListProducts_FullMethodName   = "/products.ProductService/ListProducts"
+	ProductServiceCommand_CreateCategory_FullMethodName = "/products.ProductServiceCommand/CreateCategory"
+	ProductServiceCommand_CreateProduct_FullMethodName  = "/products.ProductServiceCommand/CreateProduct"
 )
 
-// ProductServiceClient is the client API for ProductService service.
+// ProductServiceCommandClient is the client API for ProductServiceCommand service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // Service definition for managing products and categories
-type ProductServiceClient interface {
+type ProductServiceCommandClient interface {
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error)
-	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error)
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
-	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
-	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
 }
 
-type productServiceClient struct {
+type productServiceCommandClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
-	return &productServiceClient{cc}
+func NewProductServiceCommandClient(cc grpc.ClientConnInterface) ProductServiceCommandClient {
+	return &productServiceCommandClient{cc}
 }
 
-func (c *productServiceClient) CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error) {
+func (c *productServiceCommandClient) CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateCategoryResponse)
-	err := c.cc.Invoke(ctx, ProductService_CreateCategory_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ProductServiceCommand_CreateCategory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCategoryResponse)
-	err := c.cc.Invoke(ctx, ProductService_GetCategory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *productServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
+func (c *productServiceCommandClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateProductResponse)
-	err := c.cc.Invoke(ctx, ProductService_CreateProduct_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ProductServiceCommand_CreateProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServiceClient) GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetProductResponse)
-	err := c.cc.Invoke(ctx, ProductService_GetProduct_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *productServiceClient) ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListProductsResponse)
-	err := c.cc.Invoke(ctx, ProductService_ListProducts_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ProductServiceServer is the server API for ProductService service.
-// All implementations must embed UnimplementedProductServiceServer
+// ProductServiceCommandServer is the server API for ProductServiceCommand service.
+// All implementations must embed UnimplementedProductServiceCommandServer
 // for forward compatibility.
 //
 // Service definition for managing products and categories
-type ProductServiceServer interface {
+type ProductServiceCommandServer interface {
 	CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error)
-	GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error)
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
-	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
-	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
-	mustEmbedUnimplementedProductServiceServer()
+	mustEmbedUnimplementedProductServiceCommandServer()
 }
 
-// UnimplementedProductServiceServer must be embedded to have
+// UnimplementedProductServiceCommandServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedProductServiceServer struct{}
+type UnimplementedProductServiceCommandServer struct{}
 
-func (UnimplementedProductServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error) {
+func (UnimplementedProductServiceCommandServer) CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCategory not implemented")
 }
-func (UnimplementedProductServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
-}
-func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
+func (UnimplementedProductServiceCommandServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServiceServer) GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
-}
-func (UnimplementedProductServiceServer) ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListProducts not implemented")
-}
-func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
-func (UnimplementedProductServiceServer) testEmbeddedByValue()                        {}
+func (UnimplementedProductServiceCommandServer) mustEmbedUnimplementedProductServiceCommandServer() {}
+func (UnimplementedProductServiceCommandServer) testEmbeddedByValue()                               {}
 
-// UnsafeProductServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProductServiceServer will
+// UnsafeProductServiceCommandServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProductServiceCommandServer will
 // result in compilation errors.
-type UnsafeProductServiceServer interface {
-	mustEmbedUnimplementedProductServiceServer()
+type UnsafeProductServiceCommandServer interface {
+	mustEmbedUnimplementedProductServiceCommandServer()
 }
 
-func RegisterProductServiceServer(s grpc.ServiceRegistrar, srv ProductServiceServer) {
-	// If the following call pancis, it indicates UnimplementedProductServiceServer was
+func RegisterProductServiceCommandServer(s grpc.ServiceRegistrar, srv ProductServiceCommandServer) {
+	// If the following call pancis, it indicates UnimplementedProductServiceCommandServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ProductService_ServiceDesc, srv)
+	s.RegisterService(&ProductServiceCommand_ServiceDesc, srv)
 }
 
-func _ProductService_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductServiceCommand_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).CreateCategory(ctx, in)
+		return srv.(ProductServiceCommandServer).CreateCategory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductService_CreateCategory_FullMethodName,
+		FullMethod: ProductServiceCommand_CreateCategory_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).CreateCategory(ctx, req.(*CreateCategoryRequest))
+		return srv.(ProductServiceCommandServer).CreateCategory(ctx, req.(*CreateCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCategoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProductServiceServer).GetCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProductService_GetCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProductService_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductServiceCommand_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateProductRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).CreateProduct(ctx, in)
+		return srv.(ProductServiceCommandServer).CreateProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductService_CreateProduct_FullMethodName,
+		FullMethod: ProductServiceCommand_CreateProduct_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).CreateProduct(ctx, req.(*CreateProductRequest))
+		return srv.(ProductServiceCommandServer).CreateProduct(ctx, req.(*CreateProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+// ProductServiceCommand_ServiceDesc is the grpc.ServiceDesc for ProductServiceCommand service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ProductServiceCommand_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "products.ProductServiceCommand",
+	HandlerType: (*ProductServiceCommandServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateCategory",
+			Handler:    _ProductServiceCommand_CreateCategory_Handler,
+		},
+		{
+			MethodName: "CreateProduct",
+			Handler:    _ProductServiceCommand_CreateProduct_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "products.proto",
+}
+
+const (
+	ProductServiceQuery_GetCategory_FullMethodName  = "/products.ProductServiceQuery/GetCategory"
+	ProductServiceQuery_GetProduct_FullMethodName   = "/products.ProductServiceQuery/GetProduct"
+	ProductServiceQuery_ListProducts_FullMethodName = "/products.ProductServiceQuery/ListProducts"
+)
+
+// ProductServiceQueryClient is the client API for ProductServiceQuery service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ProductServiceQueryClient interface {
+	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error)
+	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
+	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
+}
+
+type productServiceQueryClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewProductServiceQueryClient(cc grpc.ClientConnInterface) ProductServiceQueryClient {
+	return &productServiceQueryClient{cc}
+}
+
+func (c *productServiceQueryClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCategoryResponse)
+	err := c.cc.Invoke(ctx, ProductServiceQuery_GetCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceQueryClient) GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProductResponse)
+	err := c.cc.Invoke(ctx, ProductServiceQuery_GetProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceQueryClient) ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProductsResponse)
+	err := c.cc.Invoke(ctx, ProductServiceQuery_ListProducts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ProductServiceQueryServer is the server API for ProductServiceQuery service.
+// All implementations must embed UnimplementedProductServiceQueryServer
+// for forward compatibility.
+type ProductServiceQueryServer interface {
+	GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error)
+	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
+	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
+	mustEmbedUnimplementedProductServiceQueryServer()
+}
+
+// UnimplementedProductServiceQueryServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedProductServiceQueryServer struct{}
+
+func (UnimplementedProductServiceQueryServer) GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
+}
+func (UnimplementedProductServiceQueryServer) GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+}
+func (UnimplementedProductServiceQueryServer) ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProducts not implemented")
+}
+func (UnimplementedProductServiceQueryServer) mustEmbedUnimplementedProductServiceQueryServer() {}
+func (UnimplementedProductServiceQueryServer) testEmbeddedByValue()                             {}
+
+// UnsafeProductServiceQueryServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProductServiceQueryServer will
+// result in compilation errors.
+type UnsafeProductServiceQueryServer interface {
+	mustEmbedUnimplementedProductServiceQueryServer()
+}
+
+func RegisterProductServiceQueryServer(s grpc.ServiceRegistrar, srv ProductServiceQueryServer) {
+	// If the following call pancis, it indicates UnimplementedProductServiceQueryServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ProductServiceQuery_ServiceDesc, srv)
+}
+
+func _ProductServiceQuery_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceQueryServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductServiceQuery_GetCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceQueryServer).GetCategory(ctx, req.(*GetCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductServiceQuery_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetProductRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).GetProduct(ctx, in)
+		return srv.(ProductServiceQueryServer).GetProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductService_GetProduct_FullMethodName,
+		FullMethod: ProductServiceQuery_GetProduct_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetProduct(ctx, req.(*GetProductRequest))
+		return srv.(ProductServiceQueryServer).GetProduct(ctx, req.(*GetProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProductServiceQuery_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListProductsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).ListProducts(ctx, in)
+		return srv.(ProductServiceQueryServer).ListProducts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductService_ListProducts_FullMethodName,
+		FullMethod: ProductServiceQuery_ListProducts_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).ListProducts(ctx, req.(*ListProductsRequest))
+		return srv.(ProductServiceQueryServer).ListProducts(ctx, req.(*ListProductsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
+// ProductServiceQuery_ServiceDesc is the grpc.ServiceDesc for ProductServiceQuery service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ProductService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "products.ProductService",
-	HandlerType: (*ProductServiceServer)(nil),
+var ProductServiceQuery_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "products.ProductServiceQuery",
+	HandlerType: (*ProductServiceQueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateCategory",
-			Handler:    _ProductService_CreateCategory_Handler,
-		},
-		{
 			MethodName: "GetCategory",
-			Handler:    _ProductService_GetCategory_Handler,
-		},
-		{
-			MethodName: "CreateProduct",
-			Handler:    _ProductService_CreateProduct_Handler,
+			Handler:    _ProductServiceQuery_GetCategory_Handler,
 		},
 		{
 			MethodName: "GetProduct",
-			Handler:    _ProductService_GetProduct_Handler,
+			Handler:    _ProductServiceQuery_GetProduct_Handler,
 		},
 		{
 			MethodName: "ListProducts",
-			Handler:    _ProductService_ListProducts_Handler,
+			Handler:    _ProductServiceQuery_ListProducts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

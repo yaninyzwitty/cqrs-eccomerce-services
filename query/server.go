@@ -51,11 +51,11 @@ func main() {
 	}
 
 	// initalize memcached client
-	// memcachedClient, err := database.NewMemcachedClient(cfg.Cache.Host, cfg.Cache.Port)
-	// if err != nil {
-	// 	slog.Error("failed to create memcached client", "error", err)
-	// 	os.Exit(1)
-	// }
+	memcachedClient, err := database.NewMemcachedClient(cfg.Cache.Host, cfg.Cache.Port)
+	if err != nil {
+		slog.Error("failed to create memcached client", "error", err)
+		os.Exit(1)
+	}
 
 	astraCfg := &database.AstraConfig{
 		Username: cfg.Database.Username,
@@ -98,11 +98,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	productContoller := controllers.NewCommandProductCommandController(session)
+	productContoller := controllers.NewProductQueryController(session, memcachedClient)
 
 	server := grpc.NewServer()
 	reflection.Register(server) //use server reflection, not required
-	pb.RegisterProductServiceServer(server, productContoller)
+	pb.RegisterProductServiceQueryServer(server, productContoller)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	stopCH := make(chan os.Signal, 1)

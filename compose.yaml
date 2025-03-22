@@ -1,3 +1,4 @@
+services:
  memcached:
     image: memcached:latest
     container_name: memcached

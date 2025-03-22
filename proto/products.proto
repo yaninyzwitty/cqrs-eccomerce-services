@@ -19,10 +19,12 @@ message Product {
 }
 
 // Service definition for managing products and categories
-service ProductService {
+service ProductServiceCommand {
   rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
-  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+}
+service ProductServiceQuery {
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
   rpc GetProduct(GetProductRequest) returns (GetProductResponse);
   rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
 }

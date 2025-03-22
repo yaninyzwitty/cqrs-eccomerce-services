@@ -14,7 +14,7 @@ import (
 )
 
 type ProductCommandController struct {
-	pb.UnimplementedProductServiceServer
+	pb.UnsafeProductServiceCommandServer
 	session *gocql.Session
 }
 
