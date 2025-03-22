@@ -2,14 +2,23 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
+	"net"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/controllers"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/database"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/helpers"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/pb"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pkg"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/snowflake"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -25,6 +34,11 @@ func main() {
 
 	if err := cfg.LoadFile(file); err != nil {
 		slog.Error("failed to load config.yaml", "error", err)
+		os.Exit(1)
+	}
+
+	if err := snowflake.InitSonyFlake(); err != nil {
+		slog.Error("failed to initialize snowflake", "error", err)
 		os.Exit(1)
 	}
 
@@ -53,5 +67,39 @@ func main() {
 		os.Exit(1)
 	}
 	defer session.Close()
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.CommandServer.Port))
+	if err != nil {
+		slog.Error("failed to listen", "error", err)
+		os.Exit(1)
+	}
+
+	productContoller := controllers.NewCommandProductController(session)
+
+	server := grpc.NewServer()
+	reflection.Register(server) //use server reflection, not required
+	pb.RegisterProductServiceServer(server, productContoller)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	stopCH := make(chan os.Signal, 1)
+
+	go func() {
+		sig := <-sigChan
+		slog.Info("Received shutdown signal", "signal", sig)
+		slog.Info("Shutting down gRPC server...")
+
+		// Gracefully stop the gRPC server
+		server.GracefulStop()
+		cancel()      // Cancel context for other goroutines
+		close(stopCH) // Notify the polling goroutine to stop
+
+		slog.Info("gRPC server has been stopped gracefully")
+	}()
+
+	slog.Info("Starting gRPC server", "port", cfg.CommandServer.Port)
+	if err := server.Serve(lis); err != nil {
+		slog.Error("gRPC server encountered an error while serving", "error", err)
+		os.Exit(1)
+	}
 
 }
