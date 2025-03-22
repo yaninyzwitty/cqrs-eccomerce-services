@@ -1,0 +1,21 @@
+---
+graphql_server:
+  port: 3000
+  hostname: localhost
+command_server:
+  port: 50051
+  hostname: localhost
+query_server:
+  port: 50052
+  hostname: localhost
+database:
+  username: token
+  token: token
+  path: ./secure-connect.zip
+queue:
+  uri: pulsar+ssl://pulsar-aws-eucentral1.streaming.datastax.com:6651
+  topic: persistent://witty-cluster/default/products-topic
+  token: some_token 
+memcache:
+  hostname: localhost
+  port: 11211
