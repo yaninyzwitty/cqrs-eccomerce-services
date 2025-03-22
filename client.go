@@ -19,7 +19,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/graph"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/pb"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pkg"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -35,7 +38,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	commandAddress := fmt.Sprintf(":%d", cfg.CommandServer.Port)
+	commandConn, err := grpc.NewClient(commandAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		slog.Error("failed to create grpc client", "error", err)
+		os.Exit(1)
+	}
+	defer commandConn.Close()
+	commandClient := pb.NewProductServiceClient(commandConn)
+
+	queryAddress := fmt.Sprintf(":%d", cfg.QueryServer.Port)
+	queryConn, err := grpc.NewClient(queryAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		slog.Error("failed to create grpc client", "error", err)
+		os.Exit(1)
+	}
+
+	queryClient := pb.NewProductServiceClient(queryConn)
+
+	defer queryConn.Close()
+
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CommandClient: commandClient,
+		QueryClient:   queryClient,
+	}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
