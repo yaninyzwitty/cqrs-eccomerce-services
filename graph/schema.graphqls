@@ -1,28 +1,52 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+scalar Time
 
-type Todo {
+type Product {
   id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+  categoryId: ID!
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
-type User {
+type Category {
   id: ID!
   name: String!
+  description: String!
+  createdAt: Time!
 }
 
 type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
+  getProduct(categoryId: ID!, productId: ID!): Product!
+  getCategory(id: ID!): Category!
+  listProducts(
+    categoryId: ID!
+    pagingState: String
+    pageSize: Int
+  ): ListProductsResponse!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createProduct(input: CreateProductInput!): Product!
+  createCategory(input: CreateCategoryInput!): Category!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  categoryId: ID!
+}
+
+input CreateCategoryInput {
+  name: String!
+  description: String!
+}
+
+type ListProductsResponse {
+  products: [Product!]!
+  pagingState: String
 }

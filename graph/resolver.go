@@ -7,6 +7,6 @@ import "github.com/yaninyzwitty/cqrs-eccomerce-service/pb"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	CommandClient pb.ProductServiceClient
-	QueryClient   pb.ProductServiceClient
+	CommandClient pb.ProductServiceCommandClient
+	QueryClient   pb.ProductServiceQueryClient
 }

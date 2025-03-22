@@ -13,7 +13,7 @@ import (
 )
 
 type ProductQueryController struct {
-	pb.UnimplementedProductServiceServer
+	pb.UnimplementedProductServiceQueryServer
 	session        *gocql.Session
 	memcacheClient *database.MemcachedClient
 }

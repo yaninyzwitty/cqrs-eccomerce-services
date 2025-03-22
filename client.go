@@ -45,7 +45,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer commandConn.Close()
-	commandClient := pb.NewProductServiceClient(commandConn)
+	commandClient := pb.NewProductServiceCommandClient(commandConn)
 
 	queryAddress := fmt.Sprintf(":%d", cfg.QueryServer.Port)
 	queryConn, err := grpc.NewClient(queryAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -54,7 +54,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	queryClient := pb.NewProductServiceClient(queryConn)
+	queryClient := pb.NewProductServiceQueryClient(queryConn)
 
 	defer queryConn.Close()
 
