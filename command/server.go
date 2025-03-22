@@ -49,11 +49,6 @@ func main() {
 
 	}
 
-	if err := godotenv.Load(); err != nil {
-		slog.Error("failed to load .env file", "error", err)
-		os.Exit(1)
-	}
-
 	astraCfg := &database.AstraConfig{
 		Username: cfg.Database.Username,
 		Path:     cfg.Database.Path,
@@ -74,7 +69,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	productContoller := controllers.NewCommandProductController(session)
+	productContoller := controllers.NewCommandProductCommandController(session)
 
 	server := grpc.NewServer()
 	reflection.Register(server) //use server reflection, not required
@@ -88,7 +83,7 @@ func main() {
 		slog.Info("Received shutdown signal", "signal", sig)
 		slog.Info("Shutting down gRPC server...")
 
-		// Gracefully stop the gRPC server
+		// Gracefully stop the Command gRPC server
 		server.GracefulStop()
 		cancel()      // Cancel context for other goroutines
 		close(stopCH) // Notify the polling goroutine to stop
@@ -96,7 +91,7 @@ func main() {
 		slog.Info("gRPC server has been stopped gracefully")
 	}()
 
-	slog.Info("Starting gRPC server", "port", cfg.CommandServer.Port)
+	slog.Info("Starting Command gRPC server", "port", cfg.CommandServer.Port)
 	if err := server.Serve(lis); err != nil {
 		slog.Error("gRPC server encountered an error while serving", "error", err)
 		os.Exit(1)

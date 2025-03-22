@@ -13,6 +13,12 @@ type Config struct {
 	QueryServer   Server   `yaml:"query_server"`
 	Database      DB       `yaml:"database"`
 	Cache         Memcache `yaml:"memcache"`
+	Queue         Queue    `yaml:"queue"`
+}
+
+type Queue struct {
+	Uri   string `yaml:"uri"`
+	Topic string `yaml:"topic"`
 }
 
 type Server struct {
@@ -28,7 +34,7 @@ type DB struct {
 
 type Memcache struct {
 	Host string `yaml:"hostname"`
-	Port string `yaml:"port"`
+	Port int    `yaml:"port"`
 }
 
 func (c *Config) LoadFile(file io.Reader) error {
