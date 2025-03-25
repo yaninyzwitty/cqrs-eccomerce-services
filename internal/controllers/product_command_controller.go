@@ -33,10 +33,37 @@ func (c *ProductCommandController) CreateCategory(ctx context.Context, req *pb.C
 	}
 
 	now := time.Now()
-	createCategoryQuery := `INSERT INTO products_keyspace_v2.categories(id, name, description, created_at) VALUES(?, ?, ?, ?)`
+	outboxID := gocql.TimeUUID()
+	bucket := now.Format("2006-01-02")
+	eventType := "category.created"
 
-	if err := c.session.Query(createCategoryQuery, categoryId, req.Name, req.Description, now).WithContext(ctx).Exec(); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create category: %v", err)
+	category := &pb.Category{
+		Id:          int64(categoryId),
+		Name:        req.Name,
+		Description: req.Description,
+		CreatedAt:   timestamppb.New(now),
+	}
+	payload, err := json.Marshal(category)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to marshal category: %v", err)
+	}
+
+	batch := c.session.NewBatch(gocql.LoggedBatch).WithContext(ctx)
+
+	batch.Query(
+		`INSERT INTO products_keyspace_v3.categories
+		(id, name, description, created_at)
+		VALUES (?, ?, ?, ?)`,
+		categoryId, req.Name, req.Description, now,
+	)
+	batch.Query(
+		`INSERT INTO products_keyspace_v3.outbox 
+		(id, bucket, payload, event_type) 
+		VALUES (?, ?, ?, ?)`,
+		outboxID, bucket, payload, eventType,
+	)
+	if err := c.session.ExecuteBatch(batch); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create product: %v", err)
 	}
 
 	return &pb.CreateCategoryResponse{
@@ -60,7 +87,7 @@ func (c *ProductCommandController) CreateProduct(ctx context.Context, req *pb.Cr
 	now := time.Now()
 	outboxID := gocql.TimeUUID()
 	bucket := now.Format("2006-01-02")
-	eventType := "create_product_event"
+	eventType := "product.created"
 
 	product := &pb.Product{
 		Id:          int64(productId),
@@ -81,14 +108,14 @@ func (c *ProductCommandController) CreateProduct(ctx context.Context, req *pb.Cr
 	batch := c.session.NewBatch(gocql.LoggedBatch).WithContext(ctx)
 
 	batch.Query(
-		`INSERT INTO products_keyspace_v2.products 
+		`INSERT INTO products_keyspace_v3.products 
 		(id, name, description, price, stock, category_id, created_at, updated_at) 
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 		productId, req.Name, req.Description, req.Price, req.Stock, req.CategoryId, now, now,
 	)
 
 	batch.Query(
-		`INSERT INTO products_keyspace_v2.products_outbox 
+		`INSERT INTO products_keyspace_v3.outbox 
 		(id, bucket, payload, event_type) 
 		VALUES (?, ?, ?, ?)`,
 		outboxID, bucket, payload, eventType,

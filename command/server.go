@@ -14,6 +14,7 @@ import (
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/controllers"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/database"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/helpers"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/queue"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pb"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pkg"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/snowflake"
@@ -62,6 +63,26 @@ func main() {
 		os.Exit(1)
 	}
 	defer session.Close()
+	pulsarCfg := &queue.PulsarConfig{
+		URI:       cfg.Queue.Uri,
+		TopicName: cfg.Queue.Topic,
+		Token:     helpers.GetEnvOrDefault("PULSAR_TOKEN", ""),
+	}
+
+	queueInstance := queue.NewPulsar(pulsarCfg)
+	client, err := queueInstance.CreatePulsarConnection(ctx)
+	if err != nil {
+		slog.Error("failed to create pulsar connection", "error", err)
+		os.Exit(1)
+	}
+	defer client.Close()
+
+	producer, err := queueInstance.CreatePulsarProducer(ctx, client)
+	if err != nil {
+		slog.Error("failed to create pulsar producer", "error", err)
+		os.Exit(1)
+	}
+	defer producer.Close()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.CommandServer.Port))
 	if err != nil {
@@ -77,6 +98,28 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	stopCH := make(chan os.Signal, 1)
+
+	// do custom polling
+
+	go func() {
+		ticker := time.NewTicker(4 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				pm := helpers.NewProcessMessage(producer, session)
+				if err := pm.ProcessMessages(context.Background()); err != nil {
+					slog.Error("failed to process messages", "error", err)
+					os.Exit(1)
+				}
+
+			case <-stopCH:
+				return
+			}
+
+		}
+	}()
 
 	go func() {
 		sig := <-sigChan

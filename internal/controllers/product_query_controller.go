@@ -27,7 +27,7 @@ func (c *ProductQueryController) GetCategory(ctx context.Context, req *pb.GetCat
 		return nil, status.Errorf(codes.InvalidArgument, "id is required")
 	}
 
-	getCategoryQuery := `SELECT id, name, description, created_at FROM products_keyspace_v2.categories WHERE id = ?`
+	getCategoryQuery := `SELECT id, name, description, created_at FROM products_keyspace_v3.categories WHERE id = ?`
 	var categoryId int64
 	var name, description string
 	var createdAt time.Time
@@ -55,7 +55,7 @@ func (c *ProductQueryController) GetProduct(ctx context.Context, req *pb.GetProd
 	var product pb.Product
 	var createdAt, updatedAt time.Time
 
-	getProductQuery := `SELECT id, name, description, price, stock, category_id, created_at, updated_at FROM products_keyspace_v2.products WHERE category_id = ? AND id = ?`
+	getProductQuery := `SELECT id, name, description, price, stock, category_id, created_at, updated_at FROM products_keyspace_v3.products WHERE category_id = ? AND id = ?`
 	err := c.session.Query(getProductQuery, req.CategoryId, req.ProductId).WithContext(ctx).Scan(
 		&product.Id, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryId, &createdAt, &updatedAt,
 	)
@@ -79,7 +79,7 @@ func (c *ProductQueryController) ListProducts(ctx context.Context, req *pb.ListP
 
 	query := c.session.Query(`
 		SELECT id, name, description, price, stock, created_at, updated_at 
-		FROM products_keyspace_v2.products 
+		FROM products_keyspace_v3.products 
 		WHERE category_id = ?`,
 		req.CategoryId,
 	).WithContext(ctx).PageSize(int(req.PageSize)).PageState(req.PagingState)
