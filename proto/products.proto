@@ -6,6 +6,7 @@ option go_package = "./pb";
 
 import "google/protobuf/timestamp.proto";
 
+
 // Product message definition
 message Product {
   int64 id = 1;
@@ -16,8 +17,17 @@ message Product {
   int32 stock = 6;
   google.protobuf.Timestamp created_at = 7;
   google.protobuf.Timestamp updated_at = 8;
+  string event_type = 9;
 }
 
+message Category {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  google.protobuf.Timestamp created_at = 4;
+  string event_type = 5;
+
+}
 // Service definition for managing products and categories
 service ProductServiceCommand {
   rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
