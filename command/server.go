@@ -14,7 +14,10 @@ import (
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/controllers"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/database"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/helpers"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/messaging"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/processor"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/queue"
+	"github.com/yaninyzwitty/cqrs-eccomerce-service/internal/repository"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pb"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/pkg"
 	"github.com/yaninyzwitty/cqrs-eccomerce-service/snowflake"
@@ -91,6 +94,9 @@ func main() {
 	}
 
 	productContoller := controllers.NewCommandProductCommandController(session)
+	outboxRepo := repository.NewCassandraOutboxRepository(session)
+	pulsarProducer := messaging.NewPulsarProducer(producer)
+	pm := processor.NewProcessMessage(pulsarProducer, outboxRepo)
 
 	server := grpc.NewServer()
 	reflection.Register(server) //use server reflection, not required
@@ -108,7 +114,7 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				pm := helpers.NewProcessMessage(producer, session)
+
 				if err := pm.ProcessMessages(context.Background()); err != nil {
 					slog.Error("failed to process messages", "error", err)
 					os.Exit(1)
